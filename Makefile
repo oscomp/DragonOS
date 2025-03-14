@@ -49,13 +49,17 @@ ci-update-submodules:
 	@sudo chown -R root .
 	@git submodule update --recursive --init
 
-ci-build: ci-kernel ci-gendisk
+ci-build: ci-kernel ci-user ci-gendisk
 
 ci-run: ci-build ci-start
 
 ci-kernel: ci-update-submodules
 	@echo "Compile $(ARCH) Kernel..."
-	@@$(MAKE) -C ./kernel all ARCH=$(ARCH) || (echo "Kernel compilation failed" && exit 1)
+	@$(MAKE) -C ./kernel all ARCH=$(ARCH) || (echo "Kernel compilation failed" && exit 1)
+
+ci-user:
+	@echo "Compile $(ARCH) User..."
+	@$(MAKE) -C ./user all ARCH=$(ARCH) FORCE_UNSAFE_CONFIGURE=1 || (echo "User compilation failed" && exit 1)
 
 ci-gendisk:
 	@echo "Generate disk image"
