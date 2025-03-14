@@ -40,7 +40,7 @@ check_arch:
 
 # ===> Following are oscomp specific
 .PHONY: all 
-all: ci-kernel-riscv64 ci-gendisk-riscv64 clean # loongarch
+all: ci-kernel-riscv64 ci-gendisk-riscv64 # clean loongarch
 
 ci-update-submodules:
 	@echo "更新子模块"
