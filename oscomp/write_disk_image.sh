@@ -3,8 +3,8 @@
 #       并在磁盘镜像中安装grub引导程序
 #
 # 用法：bash write_disk_image.sh --bios legacy/uefi
-# 如果之前创建的 disk-${ARCH}.img 是MBR分区表，那么请这样运行它：bash write_disk_image.sh --bios legacy
-# 如果之前创建的 disk-${ARCH}.img 是GPT分区表，那么请这样运行它：bash write_disk_image.sh --bios uefi
+# 如果之前创建的 ${ARCH}/disk.img 是MBR分区表，那么请这样运行它：bash write_disk_image.sh --bios legacy
+# 如果之前创建的 ${ARCH}/disk.img 是GPT分区表，那么请这样运行它：bash write_disk_image.sh --bios uefi
 # 通过设置ARCH为x86_64/i386/riscv64，进行64/32位uefi的install，但是请记住该处的ARCH应与run-qemu.sh中的一致
 ###############################################
 
@@ -16,8 +16,9 @@ export DADK=${DADK:=dadk}
 
 # 内核映像
 root_folder=$(dirname $(pwd))
-kernel="${root_folder}/bin/kernel/kernel.elf"
-mount_folder=$($DADK -f $root_folder/oscomp/$ARCH-manifest.toml -w $root_folder rootfs show-mountpoint || exit 1)
+kernel="${root_folder}/bin/${ARCH}/kernel/kernel.elf"
+sysroot_folder="${root_folder}/bin/${ARCH}/sysroot"
+mount_folder=$($DADK -f $root_folder/oscomp/manifest-$ARCH.toml -w $root_folder rootfs show-mountpoint || exit 1)
 boot_folder="${mount_folder}/boot"
 GRUB_INSTALL_PATH="${boot_folder}/grub"
 
@@ -70,13 +71,13 @@ fi
 
 # 判断是否存在硬盘镜像文件，如果不存在，就创建一个
 echo "创建硬盘镜像文件..."
-$DADK -f $root_folder/oscomp/$ARCH-manifest.toml -w $root_folder rootfs create --skip-if-exists || exit 1
+$DADK -f $root_folder/oscomp/manifest-$ARCH.toml -w $root_folder rootfs create --skip-if-exists || exit 1
 
-$DADK -f $root_folder/oscomp/$ARCH-manifest.toml -w $root_folder rootfs mount || exit 1
+$DADK -f $root_folder/oscomp/manifest-$ARCH.toml -w $root_folder rootfs mount || exit 1
 
 
 
-LOOP_DEVICE=$($DADK -f $root_folder/oscomp/$ARCH-manifest.toml -w $root_folder rootfs show-loop-device || exit 1)
+LOOP_DEVICE=$($DADK -f $root_folder/oscomp/manifest-$ARCH.toml -w $root_folder rootfs show-loop-device || exit 1)
 echo $LOOP_DEVICE
 echo ${mount_folder}
 # mkdir -p ${GRUB_INSTALL_PATH}
@@ -91,7 +92,7 @@ fi
 
 
 if [ ${ARCH} == "i386" ] || [ ${ARCH} == "x86_64" ]; then
-    cp ${kernel} ${mount_folder}/boot/
+    cp ${kernel} ${boot_folder}/
 fi
 
 # 拷贝用户程序到磁盘镜像
@@ -99,12 +100,12 @@ mkdir -p ${mount_folder}/bin
 mkdir -p ${mount_folder}/dev
 mkdir -p ${mount_folder}/proc
 mkdir -p ${mount_folder}/usr
-cp -r ${root_folder}/bin/sysroot/* ${mount_folder}/
+cp -r ${sysroot_folder}/* ${mount_folder}/
 
 # 设置 grub 相关数据
 if [ ${ARCH} == "i386" ] || [ ${ARCH} == "x86_64" ]; then
     
-    touch ${mount_folder}/boot/grub/grub.cfg
+    touch ${GRUB_INSTALL_PATH}/grub.cfg
 cfg_content='set timeout=15
     set default=0
     insmod efi_gop
@@ -112,7 +113,7 @@ cfg_content='set timeout=15
     multiboot2 /boot/kernel.elf init=/bin/dragonreach
 }'
 # 增加insmod efi_gop防止32位uefi启动报错
-echo "echo '${cfg_content}' >  ${boot_folder}/grub/grub.cfg" | sh
+echo "echo '${cfg_content}' >  ${GRUB_INSTALL_PATH}/grub.cfg" | sh
 fi
 
 install_riscv64_efi(){
@@ -156,4 +157,4 @@ fi
 
 sync
 
-$DADK -f $root_folder/oscomp/$ARCH-manifest.toml -w $root_folder rootfs umount || exit 1
+$DADK -f $root_folder/oscomp/manifest-$ARCH.toml -w $root_folder rootfs umount || exit 1
