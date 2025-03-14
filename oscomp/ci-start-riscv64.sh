@@ -1,3 +1,15 @@
+# From tools/run-qemu.sh, mainly remove the sudo for container environment
+# 
+# REFERENCE:
+# qemu-system-riscv64 -machine virt -kernel ../bin/${ARCH}/kernel/kernel.elf -m {mem} -nographic -smp {smp} -bios default -drive file={fs},if=none,format=raw,id=x0 \
+#                     -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0 -no-reboot -device virtio-net-device,netdev=net -netdev user,id=net \
+#                     -rtc base=utc \
+#                     -drive file=disk.img,if=none,format=raw,id=x1 -device virtio-blk-device,drive=x1,bus=virtio-mmio-bus.1
+
+# -chardev stdio,id=mux,mux=on,signal=off,logfile=${LOG_FILE}
+
+LOG_FILE="../serial_opt.txt"
+
 # uboot版本
 UBOOT_VERSION="v2023.10"
 RISCV64_UBOOT_PATH="../tools/arch/riscv64/u-boot-${UBOOT_VERSION}-riscv64"
@@ -22,6 +34,8 @@ echo "riscv u-boot 版本 ${UBOOT_VERSION} 已经安装"
 
 qemu-system-riscv64 -machine virt -kernel ../tools/arch/riscv64/u-boot-v2023.10-riscv64/u-boot.bin \
                     -m 512M -nographic -smp 2,cores=2,threads=1,sockets=1 -bios default \
+                    -drive file=../bin/riscv64/sdcard-rv.img,if=none,format=raw,id=x0 \
+                    -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0 \
                     -no-reboot -device virtio-net-device,netdev=net -netdev user,id=net \
                     -rtc base=utc \
                     -drive file=../bin/riscv64/disk.img,if=none,format=raw,id=x1 \
