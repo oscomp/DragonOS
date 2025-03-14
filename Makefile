@@ -78,6 +78,14 @@ kernel user write_diskimage write_diskimage-uefi qemu qemu-nographic qemu-uefi q
 
 # <===
 
+.PHONY: clean
+clean:
+	@list='$(SUBDIRS)'; for subdir in $$list; do \
+		echo "Clean in dir: $$subdir";\
+		cd $$subdir && $(MAKE) clean;\
+		cd .. ;\
+	done
+
 docs: ECHO
 	bash -c "cd docs && make html && cd .."
 
