@@ -38,12 +38,47 @@ endif
 check_arch:
 	@bash tools/check_arch.sh
 
+# ===> Following are oscomp specific
 .PHONY: all 
-all: kernel user
+all: ci-kernel-riscv64 ci-gendisk-riscv64 clean # loongarch
 
+ci-update-submodules:
+	@echo "更新子模块"
+	@sudo chown -R root .
+	@git submodule update --recursive --init
+
+ci-kernel-x86_64: ci-update-submodules
+	@echo "编译内核"
+	@mkdir -p bin/kernel/
+	@$(MAKE) -C ./kernel all ARCH=x86_64 || (sh -c "echo 内核编译失败" && exit 1)
+
+ci-gendisk-x86_64:
+	@echo "生成磁盘镜像"
+	@bash -c "cd tools && bash grub_auto_install.sh"
+	@bash -c "cd oscomp && DADK=$(DADK) ARCH=x86_64 bash write_disk_image.sh --bios=legacy"
+
+ci-start-x86_64:
+	@echo "Booting x86_64"
+	@sh -c "cd oscomp && ARCH=x86_64 bash run-qemu.sh --bios=legacy --display=nographic && cd .."
+
+ci-kernel-riscv64: ci-update-submodules
+	@echo "编译内核"
+	@mkdir -p bin/kernel/
+	@$(MAKE) -C ./kernel all ARCH=riscv64 || (sh -c "echo 内核编译失败" && exit 1)
+
+ci-gendisk-riscv64:
+	@echo "生成磁盘镜像"
+	@bash -c "cd tools && bash grub_auto_install.sh"
+	@bash -c "cd oscomp && DADK=$(DADK) ARCH=riscv64 bash write_disk_image.sh --bios=legacy"
+
+ci-start-riscv64:
+	@echo "Booting RISC-V"
+	@cd oscomp && bash ci-start-riscv.sh
+
+# <===
 
 .PHONY: kernel
-kernel: check_arch update-submodules
+kernel: check_arch
 	mkdir -p bin/kernel/
 	
 	$(MAKE) -C ./kernel all ARCH=$(ARCH) || (sh -c "echo 内核编译失败" && exit 1)
@@ -159,9 +194,7 @@ log-monitor:
 .PHONY: update-submodules
 update-submodules:
 	@echo "更新子模块"
-	@sudo chown -R $(USER):$(USER) .
 	@git submodule update --recursive --init
-	# @git submodule foreach git pull origin master
 
 .PHONY: update-submodules-by-mirror
 update-submodules-by-mirror:
