@@ -46,7 +46,7 @@ all:
 
 ci-update-submodules:
 	@echo "更新子模块"
-	@sudo chown -R root .
+	@sudo chown -R $(shell whoami) .
 	@git submodule update --recursive --init
 
 ci-build: ci-kernel ci-user ci-gendisk
@@ -63,8 +63,10 @@ ci-user:
 
 ci-gendisk:
 	@echo "Generate disk image"
+ifeq ($(ARCH),x86_64)
 	@bash -c "cd tools && bash grub_auto_install.sh"
-	@bash -c "cd oscomp && DADK=$(DADK) ARCH=$(ARCH) bash write_disk_image.sh --bios=legacy"
+endif
+	@bash -c "cd oscomp && sudo DADK=$(DADK) ARCH=$(ARCH) bash write_disk_image.sh --bios=legacy"
 
 ci-start:
 	@echo "Booting $(ARCH)"
@@ -85,6 +87,11 @@ clean:
 		cd $$subdir && $(MAKE) clean;\
 		cd .. ;\
 	done
+
+.PHONY: ECHO
+ECHO:
+	@echo "$@"
+
 
 docs: ECHO
 	bash -c "cd docs && make html && cd .."
