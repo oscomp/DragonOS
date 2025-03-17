@@ -1,23 +1,21 @@
-// #include "stdio.h"
-// #include "stdlib.h"
-// #include "unistd.h"
-// #include <assert.h>
-// #include <dirent.h>
-// #include <fcntl.h>
-// #include <sys/syscall.h>
-// #include <linux/types.h>
+#include "stdio.h"
+#include "stdlib.h"
+#include "unistd.h"
+#include <fcntl.h>
+#include <dirent.h>
+#include <assert.h>
 
 // char buf[512];
 // void test_getdents(void){
 //     // TEST_START(__func__);
 //     int fd, nread;
 //     struct linux_dirent64 *dirp64;
-//     nread = syscall(SYS_getdents64, fd, dirp64, 512);
+//     dirp64 = buf;
 //     //fd = open(".", O_DIRECTORY);
 //     fd = open(".", O_RDONLY);
 //     printf("open fd:%d\n", fd);
 
-//     nread = syscall(SYS_getdents64, fd, dirp64, 512);
+// 	nread = getdents(fd, dirp64, 512);
 // 	printf("getdents fd:%d\n", nread);
 // 	assert(nread != -1);
 // 	printf("getdents success.\n%s\n", dirp64->d_name);
@@ -32,12 +30,10 @@
 
 //     printf("\n");
 //     close(fd);
-//     TEST_END(__func__);
+//     // TEST_END(__func__);
 // }
 
-#include <stdio.h>
 int main(void){
     // test_getdents();
-    printf("getdents.c");
     return 0;
 }

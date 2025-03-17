@@ -5,11 +5,9 @@
 #include <assert.h>
 #include <sys/mount.h>
 
-//#define MNTPOINT "./mnt"
-
 static char mntpoint[64] = "./mnt";
 static char device[64] = "/dev/vda2";
-static const char *fs_type = "vfat";
+static const char *fs_type = "ramfs";
 
 void test_mount() {
 	// TEST_START(__func__);
