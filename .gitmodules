@@ -1,3 +1,7 @@
 [submodule "kernel/submodules/DragonStub"]
 	path = kernel/submodules/DragonStub
 	url = https://github.com/DragonOS-Community/DragonStub.git
+[submodule "kernel/crates/another_ext4"]
+	path = kernel/crates/another_ext4
+	url = https://github.com/PKTH-Jx/another_ext4.git
+	commit = 3c3e03a1b63a254f9cc5adb603d01c746f3fcf4b

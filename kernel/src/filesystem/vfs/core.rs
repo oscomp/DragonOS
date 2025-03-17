@@ -162,6 +162,24 @@ pub fn mount_root_fs() -> Result<(), SystemError> {
     }
     info!("Successfully migrate rootfs to FAT32!");
 
+    if let Some(ext4_disk) = block_dev_manager()
+        .lookup_gendisk_by_path("/dev/vdb1") {
+        let ext4fs = super::super::ext4::filesystem::Ext4FileSystem::from_gendisk(ext4_disk);
+
+        if let Ok(ext4fs) = ext4fs {
+            if do_mount_mkdir(ext4fs, "/mnt").is_ok() {
+                log::info!("Successfully mounted ext4 disk to /mnt");
+                let ext4_root = ROOT_INODE().find("mnt");
+                if let Ok(ext4_root) = ext4_root {
+                    log::debug!("ext4_root = {:?}", ext4_root.metadata());
+                }
+                return Ok(());
+            }
+        }
+    }
+
+    log::info!("No ext4 disk found, skipping ext4 mount");
+
     return Ok(());
 }
 
