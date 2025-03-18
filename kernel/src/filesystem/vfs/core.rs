@@ -167,12 +167,16 @@ pub fn mount_root_fs() -> Result<(), SystemError> {
         let ext4fs = super::super::ext4::filesystem::Ext4FileSystem::from_gendisk(ext4_disk);
 
         if let Ok(ext4fs) = ext4fs {
-            if do_mount_mkdir(ext4fs, "/mnt").is_ok() {
-                log::info!("Successfully mounted ext4 disk to /mnt");
-                let ext4_root = ROOT_INODE().find("mnt");
-                if let Ok(ext4_root) = ext4_root {
-                    log::debug!("ext4_root = {:?}", ext4_root.metadata());
-                }
+            if do_mount_mkdir(ext4fs, "/mnt/ext4").is_ok() {
+                log::info!("Successfully mounted ext4 disk to /mnt/ext4");
+                // FOR DEBUG
+                // let ext4_root = ROOT_INODE().lookup("/mnt/ext4");
+                // if let Ok(ext4_root) = ext4_root {
+                //     log::debug!("ext4_root = {:?}", ext4_root.metadata());
+                //     log::debug!("ls /mnt/ext4: {:?}", ext4_root.list());
+                // } else {
+                //     log::error!("Failed to lookup /mnt/ext4");
+                // }
                 return Ok(());
             }
         }

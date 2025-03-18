@@ -12,6 +12,14 @@ pub struct Ext4Inode {
 }
 
 impl IndexNode for Ext4Inode {
+    fn open(
+        &self,
+        _data: crate::libs::spinlock::SpinLockGuard<vfs::FilePrivateData>,
+        _mode: &vfs::file::FileMode,
+    ) -> Result<(), SystemError> {
+        Ok(())
+    }
+
     fn create(
         &self,
         name: &str,
@@ -90,6 +98,10 @@ impl IndexNode for Ext4Inode {
 
         self.concret_fs().link(self.inode, other.inode, name)?;
         Ok(())
+    }
+
+    fn unlink(&self, name: &str) -> Result<(), SystemError> {
+        todo!()
     }
 
     fn metadata(&self) -> Result<vfs::Metadata, SystemError> {

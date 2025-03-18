@@ -41,9 +41,7 @@ impl Ext4FileSystem {
     }
 
     pub fn from_gendisk(mount_data: Arc<GenDisk>) -> Result<Arc<dyn FileSystem>, SystemError> {
-        let mut fs = another_ext4::Ext4::load(mount_data)?;
-        log::debug!("Ext4 filesystem loaded, Going to init root inode");
-        fs.init()?;
+        let fs = another_ext4::Ext4::load(mount_data)?;
         Ok(Arc::new_cyclic(|me| Ext4FileSystem {
             fs,
             self_ref: me.clone(),
