@@ -16,6 +16,7 @@ int is_executable(const char *path) {
 int main() {
     DIR *dir;
     struct dirent *entry;
+    int program_executed = 0;
 
     dir = opendir(".");
     if (dir == NULL) {
@@ -27,14 +28,23 @@ int main() {
         if (entry->d_type == DT_REG && is_executable(entry->d_name)) {
             printf("正在执行: %s\n", entry->d_name);
             if (fork() == 0) {
-                execl(entry->d_name, entry->d_name, (char *)NULL);
+                char path[256];
+                snprintf(path, sizeof(path), "/bin/oscomp_basic_test/%s", entry->d_name);
+                execl(path, entry->d_name, NULL);
                 perror("execl");
                 exit(EXIT_FAILURE);
             }
             wait(NULL);
+            program_executed = 1;
         }
     }
 
     closedir(dir);
+
+    if (program_executed) {
+        printf("所有程序已运行完毕，终止主程序。\n");
+        return EXIT_SUCCESS;
+    }
+
     return EXIT_SUCCESS;
 }
