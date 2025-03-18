@@ -1,8 +1,12 @@
+use crate::filesystem::vfs::{self, syscall::ModeType, IndexNode, InodeId};
+use alloc::{
+    string::String,
+    sync::{Arc, Weak},
+    vec::Vec,
+};
+use another_ext4;
 use core::fmt::Debug;
 use system_error::SystemError;
-use alloc::{sync::{Arc, Weak}, vec::Vec, string::String};
-use crate::filesystem::vfs::{self, syscall::ModeType, IndexNode, InodeId};
-use another_ext4;
 
 type PrivateData<'a> = crate::libs::spinlock::SpinLockGuard<'a, vfs::FilePrivateData>;
 
@@ -27,9 +31,9 @@ impl IndexNode for Ext4Inode {
         mode: vfs::syscall::ModeType,
     ) -> Result<Arc<dyn IndexNode>, SystemError> {
         let id = self.concret_fs().create(
-            self.inode, 
-            name, 
-            another_ext4::InodeMode::from_bits_truncate(mode.bits() as u16)
+            self.inode,
+            name,
+            another_ext4::InodeMode::from_bits_truncate(mode.bits() as u16),
         )?;
         Ok(self.new_ref(id))
     }
@@ -41,7 +45,9 @@ impl IndexNode for Ext4Inode {
         buf: &mut [u8],
         _: PrivateData,
     ) -> Result<usize, SystemError> {
-        self.concret_fs().read(self.inode, offset, &mut buf[0..len]).map_err(From::from)
+        self.concret_fs()
+            .read(self.inode, offset, &mut buf[0..len])
+            .map_err(From::from)
     }
 
     fn write_at(
@@ -51,7 +57,9 @@ impl IndexNode for Ext4Inode {
         buf: &[u8],
         _: PrivateData,
     ) -> Result<usize, SystemError> {
-        self.concret_fs().write(self.inode, offset, &buf[0..len]).map_err(From::from)
+        self.concret_fs()
+            .write(self.inode, offset, &buf[0..len])
+            .map_err(From::from)
     }
 
     fn fs(&self) -> Arc<dyn vfs::FileSystem> {
@@ -127,7 +135,7 @@ impl IndexNode for Ext4Inode {
                 Unknown => {
                     log::warn!("Unknown file type, going to treat it as a file");
                     vfs::FileType::File
-                },
+                }
             },
             mode: ModeType::from_bits_truncate(attr.perm.bits() as u32),
             nlinks: attr.links as usize,

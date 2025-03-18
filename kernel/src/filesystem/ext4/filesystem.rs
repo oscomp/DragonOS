@@ -1,8 +1,10 @@
 use crate::driver::base::block::gendisk::GenDisk;
-use crate::filesystem::vfs::{self, FileSystem, FileSystemMaker, FileSystemMakerData, IndexNode, Magic, FSMAKER};
-use system_error::SystemError;
+use crate::filesystem::vfs::{
+    self, FileSystem, FileSystemMaker, FileSystemMakerData, IndexNode, Magic, FSMAKER,
+};
 use alloc::sync::{Arc, Weak};
 use linkme::distributed_slice;
+use system_error::SystemError;
 
 pub struct Ext4FileSystem {
     pub(super) fs: another_ext4::Ext4,
@@ -32,7 +34,9 @@ impl FileSystem for Ext4FileSystem {
 }
 
 impl Ext4FileSystem {
-    pub fn make_fs(data: Option<&dyn FileSystemMakerData>) -> Result<Arc<dyn FileSystem>, SystemError> {
+    pub fn make_fs(
+        data: Option<&dyn FileSystemMakerData>,
+    ) -> Result<Arc<dyn FileSystem>, SystemError> {
         let mount_data = data
             .and_then(|d| d.as_any().downcast_ref::<Arc<GenDisk>>())
             .ok_or(SystemError::EINVAL)?;
