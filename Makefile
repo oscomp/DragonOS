@@ -44,6 +44,12 @@ all:
 	#@make ARCH=x86_64 ci-build
 	@make ARCH=riscv64 ci-build
 
+ci-get-testcase:
+ifneq ($(REGET), 1)
+	@echo "测试用例已经获取，跳过获取步骤。如需重新获取，请设置 REGET=1"
+endif
+	@cd oscomp && sh ci-testcase.sh
+
 ci-update-submodules:
 	@echo "更新子模块"
 	@sudo chown -R $(shell whoami) .
@@ -82,6 +88,7 @@ kernel user write_diskimage write_diskimage-uefi qemu qemu-nographic qemu-uefi q
 
 .PHONY: clean
 clean:
+	@rm -rf bin
 	@list='$(SUBDIRS)'; for subdir in $$list; do \
 		echo "Clean in dir: $$subdir";\
 		cd $$subdir && $(MAKE) clean;\
