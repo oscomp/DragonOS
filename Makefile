@@ -113,7 +113,7 @@ else
 	gdb-multiarch -n -x tools/.gdbinit
 endif
 
-fmt: check_arch
+fmt:
 	@echo "格式化代码" 
 	FMT_CHECK=$(FMT_CHECK) $(MAKE) fmt -C kernel
 	FMT_CHECK=$(FMT_CHECK) $(MAKE) fmt -C user

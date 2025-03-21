@@ -25,19 +25,17 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: "recursive"
-
-      - name: Format check
-        continue-on-error: true
+      
+      - name: Change source
         run: |
-          printf "\n" >> kernel/src/include/bindings/bindings.rs
-          FMT_CHECK=1 make fmt
+          find . -type f \( -name "*.toml" -o -name "Makefile" \) -exec sed -i 's/git\.mirrors\.dragonos\.org\.cn/github\.com/g' {} +
 
       - name: build kernel
         run: |
           make ci-kernel
 
       - name: build userland
-        if: matrix.arch != 'x86_64' # skip userland build for x86_64 for lack of toolchain
+        if: matrix.arch != 'x86_64'
         run: |
           make ci-user
 
@@ -51,3 +49,7 @@ jobs:
         timeout-minutes: 3
         run: |
           cd oscomp && bash ci-boot-test.sh
+
+      - name: Format check
+        run: |
+          FMT_CHECK=1 make fmt

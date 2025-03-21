@@ -1,4 +1,4 @@
-From docker.educg.net/cg/os-contest:20250226
+FROM docker.educg.net/cg/os-contest:20250226
 
 RUN apt update
 RUN apt install -y --no-install-recommends \
