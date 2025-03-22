@@ -1,5 +1,6 @@
 #!/bin/bash
 
+bash ./ci-testcase.sh
 # 启动qemu并在后台运行，将输出重定向到文件描述符3
 exec 3< <(bash ./ci-start-${ARCH}.sh 2>&1)
 
