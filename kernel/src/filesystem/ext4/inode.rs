@@ -119,7 +119,7 @@ impl IndexNode for Ext4Inode {
         Ok(vfs::Metadata {
             inode_id: InodeId::from(attr.ino as usize),
             size: attr.size as i64,
-            blk_size: another_ext4::BLOCK_SIZE as usize,
+            blk_size: another_ext4::BLOCK_SIZE,
             blocks: attr.blocks as usize,
             atime: PosixTimeSpec::new(attr.atime.into(), 0),
             mtime: PosixTimeSpec::new(attr.mtime.into(), 0),

@@ -15,7 +15,11 @@ impl another_ext4::BlockDevice for super::GenDisk {
     // - read the block from gendisk
     // - return the block
     fn read_block(&self, block_id: u64) -> another_ext4::Block {
-        let mut buf = Box::new([0; another_ext4::BLOCK_SIZE]);
+        let mut buf: Box<[u8; 4096]> = vec![0u8; another_ext4::BLOCK_SIZE]
+            .into_boxed_slice()
+            .try_into()
+            .expect("Failed to convert boxed slice to boxed array");
+
         let (_, lba_id_start, block_count) = self.convert_from_ext4_blkid(block_id);
         self.block_device()
             .read_at(lba_id_start, block_count, &mut *buf)

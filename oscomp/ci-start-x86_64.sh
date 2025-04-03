@@ -7,10 +7,10 @@ SHM_OBJECT_PARAM="memory-backend-file,size=${MEMORY},id=${MEMORY_BACKEND},mem-pa
 DISK_IMAGE="${BINARY_PATH}/disk.img"
 DRIVE="id=disk,file=${DISK_IMAGE},if=none"
 
-TEST_CASE_IMAGE="${BINARY_PATH}/sdcard.img"
+TEST_CASE_IMAGE="${BINARY_PATH}/sdcard-rv.img"
 if [ -f ${TEST_CASE_IMAGE} ]; then
     echo "测试用例存在"
-    QEMU_SD_PARAM="-drive id=disk1,file=${TEST_CASE_IMAGE},if=none -device ide-hd,drive=disk1,bus=ahci.1"
+    QEMU_SD_PARAM="-drive id=disk1,file=${TEST_CASE_IMAGE},if=none -device virtio-blk-pci,drive=disk1"
 else
     echo "测试用例不存在"
     QEMU_SD_PARAM=""
@@ -29,8 +29,7 @@ qemu-system-x86_64  --nographic \
                     -serial chardev:mux \
                     -monitor chardev:mux \
                     -chardev stdio,id=mux,mux=on,signal=off,logfile=${LOG_FILE} \
-                    -device ahci,id=ahci \
-                    -drive ${DRIVE} -device ide-hd,drive=disk,bus=ahci.0 \
+                    -drive ${DRIVE} -device virtio-blk-pci,drive=disk \
                     ${QEMU_SD_PARAM} \
                     -netdev user,id=hostnet0,hostfwd=tcp::12580-:12580 \
                     -device virtio-net-pci,vectors=5,netdev=hostnet0,id=net0 \

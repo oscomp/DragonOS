@@ -166,6 +166,7 @@ pub fn mount_root_fs() -> Result<(), SystemError> {
         let ext4fs = super::super::ext4::filesystem::Ext4FileSystem::from_gendisk(ext4_disk);
 
         if let Ok(ext4fs) = ext4fs {
+            ROOT_INODE().mkdir("mnt", ModeType::from_bits_truncate(0o755))?;
             if do_mount_mkdir(ext4fs, "/mnt/ext4").is_ok() {
                 log::info!("Successfully mounted ext4 disk to /mnt/ext4");
                 // FOR DEBUG
