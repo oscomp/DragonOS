@@ -7,6 +7,8 @@ RUN apt install -y --no-install-recommends \
 RUN rustup install nightly-2024-11-05
 RUN rustup default nightly-2024-11-05
 RUN rustup target add riscv64gc-unknown-none-elf --toolchain nightly-2024-11-05
+RUN rustup target add riscv64gc-unknown-none-musl --toolchain nightly-2024-11-05
+RUN rustup target add x86_64-unknown-linux-musl --toolchain nightly-2024-11-05
 RUN rustup component add rust-src --toolchain nightly-2024-11-05
 RUN rustup component add clippy --toolchain nightly-2024-11-05
 RUN rustup component add rustfmt --toolchain nightly-2024-11-05

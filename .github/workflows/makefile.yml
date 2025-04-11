@@ -16,7 +16,7 @@ jobs:
       ARCH: ${{ matrix.arch }}
       HOME: /root
     container: 
-      image: ghcr.io/samuka007/dragonos-oscomp-ci-docker:pre-2025-03-21
+      image: ghcr.io/samuka007/dragonos-oscomp-ci-docker:latest
       options: --privileged
     defaults:
       run:

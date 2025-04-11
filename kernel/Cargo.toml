@@ -84,7 +84,7 @@ unwinding = { version = "=0.2.3", default-features = false, features = [
     "personality",
 ] }
 defer = "0.2.1"
-another_ext4 = { path = "crates/another_ext4", default-features = false }
+another_ext4 = { git = "https://github.com/DragonOS-Community/another_ext4.git", rev = "28bb8731fc" }
 cfg-if = { version = "1.0.0" }
 
 # target为x86_64时，使用下面的依赖
