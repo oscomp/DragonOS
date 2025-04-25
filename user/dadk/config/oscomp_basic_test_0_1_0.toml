@@ -21,7 +21,7 @@ type = "build-from-source"
 # "install_from_prebuilt" 可选值："local", "archive"
 source = "local"
 # 路径或URL
-source-path = "user/apps/oscomp_basic_test"
+source-path = "user/apps/oscomp"
 # 构建相关信息
 [build]
 # （可选）构建命令
@@ -29,7 +29,7 @@ build-command = "make install"
 # 安装相关信息
 [install]
 # （可选）安装到DragonOS的路径
-in-dragonos-path = "/bin/oscomp_basic_test/"
+in-dragonos-path = "/bin/oscomp/"
 # 清除相关信息
 [clean]
 # （可选）清除命令
