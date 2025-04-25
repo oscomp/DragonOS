@@ -6,7 +6,10 @@
 
 
 void test_read() {
-	int fd = open("./text.txt", 0);
+	int ret = creat("./text.txt", S_IRUSR | S_IWUSR);
+	assert(ret >= 0);
+	write(ret, "Hello, DragonOS!\n", 17);
+	close(ret);	int fd = open("./text.txt", 0);
 	char buf[256];
 	int size = read(fd, buf, 256);
 	assert(size >= 0);

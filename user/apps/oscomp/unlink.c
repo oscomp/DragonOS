@@ -15,6 +15,10 @@
 
 int test_unlink()
 {
+    int _ret = creat("./test_unlink", S_IRUSR | S_IWUSR);
+	assert(_ret >= 0);
+	write(_ret, "Hello, DragonOS!\n", 17);
+	close(_ret);
 
     char *fname = "./test_unlink";
     int fd, ret;

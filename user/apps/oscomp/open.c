@@ -7,6 +7,10 @@
 
 void test_open() {
 	// O_RDONLY = 0, O_WRONLY = 1
+	int ret = creat("./text.txt", S_IRUSR | S_IWUSR);
+	assert(ret >= 0);
+	write(ret, "Hello, DragonOS!\n", 17);
+	close(ret);
 	int fd = open("./text.txt", 0);
 	assert(fd >= 0);
 	char buf[256];
