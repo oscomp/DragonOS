@@ -3,6 +3,7 @@
 #![allow(clippy::upper_case_acronyms)]
 #![allow(non_local_definitions)]
 use num_derive::{FromPrimitive, ToPrimitive};
+mod another_ext4;
 
 #[repr(i32)]
 #[derive(Debug, FromPrimitive, ToPrimitive, PartialEq, Eq, Clone)]

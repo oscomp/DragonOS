@@ -9,6 +9,9 @@ use system_error::SystemError;
 
 use super::block_device::{BlockDevice, BlockId, GeneralBlockRange, LBA_SIZE};
 
+pub mod ext4;
+pub mod fsmaker;
+
 #[derive(Debug)]
 pub struct GenDisk {
     bdev: Weak<dyn BlockDevice>,
