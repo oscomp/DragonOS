@@ -345,7 +345,14 @@ impl PageReclaimer {
             }
         };
         let paddr = guard.phys_address();
-        let inode = page_cache.inode().clone().unwrap().upgrade().unwrap();
+        let inode = page_cache.inode().clone().unwrap().upgrade();
+
+        if inode.is_none(){
+            guard.remove_flags(PageFlags::PG_DIRTY);
+            return;
+        }
+        
+        let inode = inode.unwrap();
 
         for vma in guard.vma_set() {
             let address_space = vma.lock_irqsave().address_space().unwrap();
