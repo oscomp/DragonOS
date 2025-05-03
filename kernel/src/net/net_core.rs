@@ -65,7 +65,7 @@ fn dhcp_query() -> Result<(), SystemError> {
 
     let dhcp_handle = SOCKET_SET.lock_irqsave().add(dhcp_socket);
 
-    const DHCP_TRY_ROUND: u8 = 10;
+    const DHCP_TRY_ROUND: u8 = 1;
     for i in 0..DHCP_TRY_ROUND {
         debug!("DHCP try round: {}", i);
         net_face.poll(&mut SOCKET_SET.lock_irqsave()).ok();
