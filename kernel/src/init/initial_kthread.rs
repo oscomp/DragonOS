@@ -9,7 +9,7 @@ use system_error::SystemError;
 use crate::{
     arch::{interrupt::TrapFrame, process::arch_switch_to_user},
     driver::net::e1000e::e1000e::e1000e_init,
-    filesystem::vfs::core::mount_root_fs,
+    filesystem::vfs::vcore::mount_root_fs,
     namespaces::NsProxy,
     net::net_core::net_init,
     process::{
@@ -24,9 +24,9 @@ use super::{cmdline::kenrel_cmdline_param_manager, initcall::do_initcalls};
 
 const INIT_PROC_TRYLIST: [(&str, Option<&str>); 4] = [
     ("/bin/dragonreach", None),
+    ("/bin/busybox", Some("init")),
     ("/bin/init", None),
     ("/bin/sh", None),
-    ("/bin/busybox", Some("init")),
 ];
 
 pub fn initial_kernel_thread() -> i32 {
