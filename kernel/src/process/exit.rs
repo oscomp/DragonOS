@@ -264,12 +264,12 @@ fn do_waitpid(
             if let Some(infop) = &mut kwo.ret_info {
                 *infop = WaitIdInfo {
                     pid,
-                    status: status as i32,
+                    status: (status as i32) << 8,
                     cause: SigChildCode::Exited.into(),
                 };
             }
 
-            kwo.ret_status = status as i32;
+            kwo.ret_status = (status as i32) << 8;
 
             child_pcb.clear_pg_and_session_reference();
             drop(child_pcb);
