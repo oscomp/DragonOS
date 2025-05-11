@@ -1073,7 +1073,7 @@ macro_rules! producefs {
 
 define_filesystem_maker_slice!(FSMAKER);
 
-/// @brief 批量填充Dirent时的上下文
+/// # 批量填充Dirent时的上下文
 /// linux语义是通过getdents_callback *类型来实现类似链表的迭代填充，这里暂时考虑通过填充传入的缓冲区来实现
 pub struct FilldirContext<'a> {
     buf: &'a mut [u8],
@@ -1092,7 +1092,7 @@ impl<'a> FilldirContext<'a> {
         }
     }
 
-    /// @brief 填充单个dirent结构体
+    /// # 填充单个dirent结构体
     fn fill_dir(
         &mut self,
         name: &str,

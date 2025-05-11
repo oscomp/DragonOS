@@ -343,9 +343,10 @@ impl File {
         return Ok(());
     }
 
-    /// @brief 读取目录项
+    /// # 读取目录项
     ///
-    /// @param ctx 填充目录项的上下文
+    /// ## 参数
+    /// - `ctx` 填充目录项的上下文
     pub fn read_dir(&self, ctx: &mut FilldirContext) -> Result<(), SystemError> {
         let inode: &Arc<dyn IndexNode> = &self.inode;
         let mut current_pos = self.offset.load(Ordering::SeqCst);
