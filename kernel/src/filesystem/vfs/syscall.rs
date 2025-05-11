@@ -1,5 +1,5 @@
 use crate::filesystem::overlayfs::OverlayMountData;
-use crate::filesystem::vfs::FileSystemMakerData;
+use crate::filesystem::vfs::{FileSystemMakerData, FilldirContext};
 use core::mem::size_of;
 
 use alloc::{string::String, sync::Arc, vec::Vec};
@@ -31,7 +31,7 @@ use super::{
     },
     utils::{rsplit_path, user_path_at},
     vcore::{do_mkdir_at, do_remove_dir, do_unlink_at},
-    Dirent, FileType, IndexNode, SuperBlock, FSMAKER, MAX_PATHLEN, ROOT_INODE,
+    FileType, IndexNode, SuperBlock, FSMAKER, MAX_PATHLEN, ROOT_INODE,
     VFS_MAX_FOLLOW_SYMLINK_TIMES,
 };
 
@@ -734,9 +734,6 @@ impl Syscall {
     ///
     /// @return 成功返回读取的字节数，失败返回错误码
     pub fn getdents(fd: i32, buf: &mut [u8]) -> Result<usize, SystemError> {
-        let dirent =
-            unsafe { (buf.as_mut_ptr() as *mut Dirent).as_mut() }.ok_or(SystemError::EFAULT)?;
-
         if fd < 0 || fd as usize > FileDescriptorVec::PROCESS_MAX_FD {
             return Err(SystemError::EBADF);
         }
@@ -747,15 +744,26 @@ impl Syscall {
         let file = fd_table_guard
             .get_file_by_fd(fd)
             .ok_or(SystemError::EBADF)?;
-
         // drop guard 以避免无法调度的问题
         drop(fd_table_guard);
 
-        let res = file.readdir(dirent).map(|x| x as usize);
-
-        return res;
+        let mut ctx = FilldirContext::new(buf);
+        match file.read_dir(&mut ctx) {
+            Ok(_) => {
+                if ctx.error.is_some() {
+                    if ctx.error == Some(SystemError::EINVAL) {
+                        return Ok(ctx.current_pos);
+                    } else {
+                        return Err(ctx.error.unwrap());
+                    }
+                }
+                return Ok(ctx.current_pos);
+            }
+            Err(e) => {
+                return Err(e);
+            }
+        }
     }
-
     /// @brief 创建文件夹
     ///
     /// @param path(r8) 路径 / mode(r9) 模式
