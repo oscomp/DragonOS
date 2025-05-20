@@ -1,3 +1,4 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/oscomp/dragonos)
 # 👋 欢迎来到 2025 OSCOMP DragonOS ～
 欢迎大家使用 DragonOS 作为内核实现赛道的基座系统！
 
